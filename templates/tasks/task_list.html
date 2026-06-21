@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}My Tasks - TaskFlow{% endblock %}
+
+{% block content %}
+
+  <div class="stats-row">
+    <div class="stat-tile total">
+      <div class="stat-number">{{ total_count }}</div>
+      <div class="stat-label">Total tasks</div>
+    </div>
+    <div class="stat-tile pending">
+      <div class="stat-number">{{ pending_count }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-tile completed">
+      <div class="stat-number">{{ completed_count }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <h2>My Tasks</h2>
+    <a href="{% url 'add_task' %}" class="btn btn-primary">+ Add Task</a>
+  </div>
+
+  <form method="get" class="filter-card">
+    <div class="filter-grid">
+      <div class="field-group">
+        <label for="search">Search</label>
+        <input type="text" id="search" name="search" value="{{ search }}" placeholder="Search tasks...">
+      </div>
+      <div class="field-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="all" {% if status == "all" %}selected{% endif %}>All</option>
+          <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+          <option value="completed" {% if status == "completed" %}selected{% endif %}>Completed</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="priority">Priority</label>
+        <select id="priority" name="priority">
+          <option value="all" {% if priority == "all" %}selected{% endif %}>All</option>
+          <option value="high" {% if priority == "high" %}selected{% endif %}>High</option>
+          <option value="medium" {% if priority == "medium" %}selected{% endif %}>Medium</option>
+          <option value="low" {% if priority == "low" %}selected{% endif %}>Low</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option value="all" {% if category_id == "all" %}selected{% endif %}>All</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="{% url 'task_list' %}" class="btn btn-outline">Reset</a>
+    </div>
+  </form>
+
+  {% if tasks %}
+    <div class="task-list">
+      {% for task in tasks %}
+        <div class="task-card priority-{{ task.priority }} {% if task.is_completed %}is-completed{% endif %}">
+          <div class="task-main">
+            <div class="task-title">{{ task.title|upper }}</div>
+            {% if task.description %}
+              <div class="task-desc">{{ task.description }}</div>
+            {% endif %}
+            <div class="task-meta">
+              <span class="badge badge-{{ task.priority }}">{{ task.get_priority_display }}</span>
+              {% if task.category %}
+                <span class="badge badge-category">{{ task.category.name }}</span>
+              {% endif %}
+              {% if task.due_at %}
+                <span class="task-date">📅 {{ task.due_at|date:"d M Y, H:i" }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="task-actions">
+            {% if not task.is_completed %}
+              <a href="{% url 'complete_task' task.id %}" class="btn btn-sm btn-done">Done</a>
+            {% endif %}
+            <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-edit">Edit</a>
+            <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-delete">Delete</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>No tasks here yet</h3>
+      <p>Add a task to start planning your day.</p>
+      <a href="{% url 'add_task' %}" class="btn btn-primary">+ Add Task</a>
+    </div>
+  {% endif %}
+
+{% endblock %}

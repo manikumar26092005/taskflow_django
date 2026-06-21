@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Categories - TaskFlow{% endblock %}
+
+{% block content %}
+  <div class="section-row">
+    <h2>Categories</h2>
+  </div>
+
+  <div class="filter-card" style="margin-bottom: 28px;">
+    <form method="post" style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+      {% csrf_token %}
+      <div class="field-group" style="flex:1; min-width:220px; margin-bottom:0;">
+        <label for="{{ form.name.id_for_label }}">New category</label>
+        {{ form.name }}
+        {% if form.name.errors %}<ul class="errorlist">{% for e in form.name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary">+ Add Category</button>
+    </form>
+  </div>
+
+  {% if categories %}
+    <div class="category-grid">
+      {% for category in categories %}
+        <div class="category-chip">
+          <span class="category-chip-name">{{ category.name }}</span>
+          <form action="{% url 'delete_category' category.id %}" method="post" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-delete">Delete</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>No categories yet</h3>
+      <p>Create a category above to start grouping your tasks.</p>
+    </div>
+  {% endif %}
+{% endblock %}

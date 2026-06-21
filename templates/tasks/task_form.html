@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == "edit" %}Edit Task{% else %}Add Task{% endif %} - TaskFlow{% endblock %}
+{% block main_class %}page auth-page{% endblock %}
+
+{% block content %}
+  <div class="form-card wide">
+    <h1>{% if mode == "edit" %}Edit Task ✏️{% else %}Add Task 📝{% endif %}</h1>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="field-group">
+        <label for="{{ form.title.id_for_label }}">Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}<ul class="errorlist">{% for e in form.title.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="field-group">
+        <label for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+        {% if form.description.errors %}<ul class="errorlist">{% for e in form.description.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="{{ form.category.id_for_label }}">Category</label>
+          {{ form.category }}
+          {% if form.category.errors %}<ul class="errorlist">{% for e in form.category.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        <div class="field-group">
+          <label for="{{ form.priority.id_for_label }}">Priority</label>
+          {{ form.priority }}
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="{{ form.new_category.id_for_label }}">{{ form.new_category.label }}</label>
+        {{ form.new_category }}
+        <div class="helptext">Leave blank to use the category selected above.</div>
+      </div>
+
+      <div class="field-group">
+        <label for="{{ form.due_at.id_for_label }}">Due Date &amp; Time</label>
+        {{ form.due_at }}
+        {% if form.due_at.errors %}<ul class="errorlist">{% for e in form.due_at.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="checkbox-row">
+        {{ form.is_completed }}
+        <label for="{{ form.is_completed.id_for_label }}">Mark as Completed</label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Task</button>
+        <a href="{% url 'task_list' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}
